@@ -1,0 +1,3 @@
+recursive-include honeypot/data *
+recursive-include honeypot/test *
+recursive-include honeypot/modules/data *
