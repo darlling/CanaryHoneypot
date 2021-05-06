@@ -4,7 +4,7 @@ import json
 from itertools import groupby
 from os import rename
 # from subprocess import DEVNULL, run
-from os.path import expanduser, isfile
+from os.path import isfile
 from string import ascii_letters, digits
 from sys import exit
 
@@ -13,7 +13,7 @@ from six import iteritems
 
 SAMPLE_SETTINGS = resource_filename(__name__, "data/settings.json")
 SETTINGS = "honeypot.conf"
-
+PY3 = True
 
 class Config:
     def __init__(self, configfile=SETTINGS):
@@ -22,7 +22,6 @@ class Config:
 
         files = [
             f"/etc/honeypotd/{configfile}",
-            f"{expanduser("~")}/.{configfile}",
             configfile
         ]
         print("** I hope you enjoy using the honeypot designed by 20175415-何万有 **")
