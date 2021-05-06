@@ -35,11 +35,11 @@
                         index: 'dashboard',
                         title: '系统首页'
                     },
-                    {
-                        icon: 'mticonfont mticon-zhuji',
-                        index: 'hoststatus',
-                        title: '主机状态'
-                    },
+                    // {
+                    //     icon: 'mticonfont mticon-zhuji',
+                    //     index: 'hoststatus',
+                    //     title: '主机状态'
+                    // },
                     {
                         icon: 'mticonfont mticon-shougongji',
                         index: 'attacklist',

@@ -13,8 +13,8 @@
                                     <div>fighting~</div>
                                 </div>
                             </div>
-                            <!-- <div class="user-info-list">上次登录时间：<span>2018-01-01</span></div> -->
-                            <!-- <div class="user-info-list">上次登录地点：<span>东莞</span></div> -->
+                            <!-- <div class="user-info-list">上次登录时间：<span>2021-04-25</span></div> -->
+                            <!-- <div class="user-info-list">上次登录地点：<span>天津</span></div> -->
                         </el-card>
                         <!-- 饼图 -->
                         <div style="background:white; height: 335px;">
