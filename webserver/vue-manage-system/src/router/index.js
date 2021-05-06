@@ -42,16 +42,16 @@ export default new Router({
                     component: resolve => require(['../components/page/Whiteiplist.vue'], resolve),
                     meta: { title: '白名单ip' }
                 },
-                {
-                    path: '/tabs',
-                    component: resolve => require(['../components/page/Tabs.vue'], resolve),
-                    meta: { title: 'tab选项卡' }
-                },
+                // {
+                //     path: '/tabs',
+                //     component: resolve => require(['../components/page/Tabs.vue'], resolve),
+                //     meta: { title: 'tab选项卡' }
+                // },
                 {
                     path: '/mailconf',
                     component: resolve => require(['../components/page/Emailconf.vue'], resolve),
                     meta: { title: '邮件配置' }
-                },
+                }
                 // {
                 //     // 富文本编辑器组件
                 //     path: '/editor',
@@ -76,12 +76,12 @@ export default new Router({
                 //     component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
                 //     meta: { title: 'schart图表' }
                 // },
-                {
-                    // 拖拽列表组件
-                    path: '/drag',
-                    component: resolve => require(['../components/page/DragList.vue'], resolve),
-                    meta: { title: '拖拽列表' }
-                }
+                // {
+                //     // 拖拽列表组件
+                //     path: '/drag',
+                //     component: resolve => require(['../components/page/DragList.vue'], resolve),
+                //     meta: { title: '拖拽列表' }
+                // }
                 // {
                 //     // 权限页面
                 //     path: '/permission',
