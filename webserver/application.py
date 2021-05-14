@@ -21,10 +21,10 @@ settings = dict(
 # 收件人配置列表
 emailfile = os.path.join(os.path.dirname(__file__), "util/conf", "email.ini")
 # smtp邮件服务器配置
-mail_host = "smtp.163.com"  #使用的邮箱的smtp服务器地址，这里是163的smtp地址
-mail_user = "qyfllyj"  #用户名
-mail_pass = "opencanary123"  #密码
-mail_postfix = "163.com"  #邮箱的后缀，网易就是163.com
+mail_host = "smtp.163.com"  # 使用的邮箱的smtp服务器地址，这里是163的smtp地址
+mail_user = "wanyou_he"  # 用户名
+mail_pass = "HSDUNPSBINMEDDRK"  # 密码
+mail_postfix = "163.com"  # 邮箱的后缀，网易就是163.com
 
 # web日志配置
 logfile = os.path.join(os.path.dirname(__file__), "logs", "app.log")

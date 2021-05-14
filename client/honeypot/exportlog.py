@@ -48,7 +48,10 @@ def cowrieLogPostServer():
                                 log["logdata"].update(
                                     dict(
                                         (
-                                            ("LOCALVERSION", config.getVal("ssh.version")),
+                                            (
+                                                "LOCALVERSION",
+                                                config.getVal("ssh.version"),
+                                            ),
                                             ("REMOTEVERSION", remoteVer),
                                         )
                                     )
@@ -59,7 +62,7 @@ def cowrieLogPostServer():
                             # 0: shell 交互已完成，连接已关闭
                             flag = 0
                             try:
-                                log["logdata"].update({"INPUT": ";;".join(cmds)})
+                                log["logdata"].update({"INPUT": ";  ".join(cmds)})
                                 getLogger(config).log(log, retry=False, m_i=True)
                             except:
                                 pass
