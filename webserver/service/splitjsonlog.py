@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 解析客户端请求过来的日志 """
 
-import datetime as datetimes
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dbs.dal.LogOperate import LogOp
 from util.task import sched
@@ -34,11 +33,11 @@ def parserlog(jsonlog):
         else:
             honeycred = False
 
-        if "local_time" in jsonlog:
-            local_time = jsonlog["local_time"]
-            # print local_time
-        else:
-            local_time = datetime.now()
+        # if "local_time" in jsonlog:
+        #     local_time = jsonlog["local_time"]
+        #     # print local_time
+        # else:
+        local_time = datetime.now()
 
         if "logdata" in jsonlog:
             if "HOSTNAME" in jsonlog["logdata"]:
@@ -527,23 +526,12 @@ def parserlog(jsonlog):
                                 logtype = "mssql登录win身份认证"
                             elif str(logtype) == "7001":
                                 logtype = "http代理登录尝试"
-                            content = (
-                                "攻击主机："
-                                + src_host
-                                + "<br>"
-                                + "被攻击主机："
-                                + dst_host
-                                + "<br>"
-                                + "攻击时间："
-                                + local_time
-                            )
+                            content = f"攻击主机: {src_host}<br>被攻击主机: {dst_host}<br>攻击时间: {local_time}"
                             # 将发送邮件丢到任务队列
                             sched.add_job(
                                 send_mail,
                                 "date",
-                                run_date=(
-                                    datetime.now() + datetimes.timedelta(seconds=1)
-                                ),
+                                run_date=(datetime.now() + timedelta(seconds=1)),
                                 args=["蜜罐告警：" + logtype, content],
                                 id=str(uuid.uuid1()),
                             )
