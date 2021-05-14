@@ -530,10 +530,10 @@ def parserlog(jsonlog):
                             content = (
                                 "攻击主机："
                                 + src_host
-                                + "--"
+                                + "<br>"
                                 + "被攻击主机："
                                 + dst_host
-                                + "--"
+                                + "<br>"
                                 + "攻击时间："
                                 + local_time
                             )

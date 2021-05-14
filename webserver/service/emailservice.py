@@ -30,7 +30,7 @@ def send_mail(sub, content):
 
     # mailto_list = maillists()  #收件人(列表)
     to_list = maillists()
-    me = "opencanary" + "<" + mail_user + "@" + mail_postfix + ">"
+    me = "honeypot" + "<" + mail_user + "@" + mail_postfix + ">"
     msg = MIMEText(content, _subtype='html', _charset='utf-8')
     msg['Subject'] = sub
     msg['From'] = me
@@ -55,7 +55,7 @@ def switches():
 
 
 def main():
-    send_mail("兄弟电话1", "电话是170")  #邮件主题和邮件内容
+    send_mail("honeypot", "蜜罐告警")  #邮件主题和邮件内容
 
 
 if __name__ == '__main__':
