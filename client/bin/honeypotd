@@ -7,33 +7,18 @@ cmd=$1
 function usage() {
     echo -e "\n  Honeypot v1.0\n"
     echo -e "\thoneypotd [ --start | --dev | --stop | --restart | --copyconfig | --usermodule | --help ]\n\n"
-    echo -e "\t\t--start\tStarts the honeypotd process"
-    echo -e "\t\t--dev\tRun the honeypotd process in the foreground"
-    echo -e "\t\t--stop\tStops the honeypotd process"
-    echo -e "\t\t--usermodule\tRun honeypotd in foreground with only usermodules enabled"
-    echo -e "\t\t--copyconfig\tCreates a default config file at /etc/honeypotd/honeypot.conf"
-    echo -e "\t\t--"
-    echo -e "\t\t--help\tThis help\n"
-
+    echo -e "\t\t--start\tStart the honeypotd process.\n"
+    echo -e "\t\t--dev\tRun the honeypotd process in the foreground.\n"
+    echo -e "\t\t--stop\tStop the honeypotd process.\n"
+    echo -e "\t\t--copyconfig\tCreate a default config file at /etc/honeypotd/honeypot.conf.\n"
+    echo -e "\t\t--restart\tRestart the honeypotd process.\n"
+    echo -e "\t\t--help\tThis help.\n"
 }
 
 if [ "${cmd}" == "--start" ]; then
     sudo "${DIR}/twistd" -y "${DIR}/honeypot.tac" --pidfile "${PIDFILE}" --syslog --prefix=honeypotd
 elif [ "${cmd}" == "--dev" ]; then
     sudo "${DIR}/twistd" -noy "${DIR}/honeypot.tac"
-elif [ "${cmd}" == "--usermodule" ]; then
-  usermodconf=$(python3.7 -c "from __future__ import print_function; from pkg_resources import resource_filename; print(resource_filename('honeypot', 'data/settings-usermodule.json'))")
-
-  if [ -f honeypot.conf ]; then
-    if ! diff -q honeypot.conf "${usermodconf}" 2>&1 >/dev/null; then
-      echo "Backing up old config to ./honeypot.conf.old"
-      cp honeypot.conf{,.old}
-    fi
-  fi
-
-  cp "${usermodconf}" honeypot.conf
-  sudo "${DIR}/twistd" -noy "${DIR}/honeypot.tac"
-
 elif [ "${cmd}" == "--restart" ]; then
     pid=`sudo cat "${PIDFILE}"`
     sudo kill "$pid"
