@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 """ 测试认证请求里的token """
 
-import tornado
 from service.hostservice import hostonline
-from util.auth import jwtauth
 
 from handlers.base import BaseHandler
+
+# from util.auth import jwtauth
 
 
 # @jwtauth

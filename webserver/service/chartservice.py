@@ -1,16 +1,9 @@
 # -*- coding:utf-8 -*-
 """ 折线图和饼图 """
 
-import datetime
-import sys
+from datetime import datetime
 
 from dbs.dal.LogOperate import LogOp
-
-if sys.version[0] == "2":
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-else:
-    from importlib import reload
 
 nums = LogOp()
 
@@ -33,8 +26,7 @@ nums = LogOp()
 def attack_num(sourceDataz):
     """每月攻击数量统计"""
     # 当前的年份
-    now = datetime.datetime.now().year
-    # now=2019
+    now = datetime.now().year
     attack_res = nums.attack_select_num(now)
     print("attack_res:" + str(attack_res))
     # [(5, 1), (7, 2), (8, 258), (9, 3)]
@@ -71,7 +63,7 @@ def attack_num(sourceDataz):
 def white_num(sourceDataz):
     """每月白名单攻击数量统计"""
     # 当前的年份
-    now = datetime.datetime.now().year
+    now = datetime.now().year
     white_res = nums.white_select_num(now)
     # [(5, 1), (7, 2), (8, 258), (9, 3)]
     if white_res:
@@ -123,9 +115,8 @@ def line_total_num(sdataz):
 
 def pie_num(piesoureData):
     # 当前的年份
-    now = datetime.datetime.now().year
+    now = datetime.now().year
     """ 饼图数据 """
-    # now=2019
     data_pie = nums.pie_select_num(now)
     print(data_pie)
     if data_pie:

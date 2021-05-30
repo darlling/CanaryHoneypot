@@ -2,7 +2,7 @@
 """ 应用配置文件 """
 
 import logging
-import os
+import os.path
 from base64 import b64encode
 from uuid import uuid4
 

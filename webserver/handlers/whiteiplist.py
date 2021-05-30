@@ -2,10 +2,6 @@
 """ 获取白名单ip """
 
 # from dbs.dal.LogOperate import LogOp
-import datetime
-import json
-
-import tornado
 from service.whiteipservice import whiteips
 from util.auth import jwtauth
 
@@ -14,8 +10,9 @@ from handlers.base import BaseHandler
 
 @jwtauth
 class WhiteiplistHandler(BaseHandler):
-    """ 获取白名单ip列表 """
+    """获取白名单ip列表"""
+
     def get(self):
-        res = ','.join(whiteips())
+        res = ",".join(whiteips())
         # json.dumps(line_res)
         self.write(res)

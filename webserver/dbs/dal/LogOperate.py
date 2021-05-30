@@ -3,8 +3,7 @@
 
 from dbs.initdb import DBSession
 from dbs.models.HoneypotLog import OpencanaryLog
-from dbs.models.Whiteip import Whiteip
-from sqlalchemy import asc, desc, distinct, extract, func
+from sqlalchemy import desc, extract, func
 from sqlalchemy.exc import InvalidRequestError
 
 

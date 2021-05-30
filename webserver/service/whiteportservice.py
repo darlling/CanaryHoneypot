@@ -2,8 +2,6 @@
 """ 白名单端口过滤 """
 
 from dbs.dal.Whiteport import WhitePort
-# import sys
-# sys.path.append("..")
 
 White_res = WhitePort()
 

@@ -3,16 +3,14 @@
 
 import sys
 
-from sqlalchemy import (TIMESTAMP, Boolean, Column, Integer, String, Unicode,
-                        UniqueConstraint)
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy import TIMESTAMP, Column, String, UniqueConstraint
 
 sys.path.append("..")
-from dbs.initdb import Base, DBSession, engine
+from dbs.initdb import Base, engine
 
 
 class Host(Base):
-    __tablename__ = 'Host'
+    __tablename__ = "Host"
 
     id = Column(String(50), primary_key=True)
     last_time = Column(TIMESTAMP, nullable=False)
@@ -22,7 +20,7 @@ class Host(Base):
 
     __table_args__ = (
         # 设置联合唯一索引
-        UniqueConstraint('hostname', 'ip', name='uix_hostname_ip'),
+        UniqueConstraint("hostname", "ip", name="uix_hostname_ip"),
         # 设置联合索引
         # Index('uix_hostname_ip', 'hostname', 'ip'),
     )
@@ -38,7 +36,7 @@ def drop_db():
 
 if __name__ == "__main__":
     init_db()
-    print('create Host table')
+    print("create Host table")
 """
 CREATE TABLE `Host` (
 	id VARCHAR(50) NOT NULL,

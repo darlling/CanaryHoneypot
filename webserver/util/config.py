@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 邮件、白名单配置 """
 
-import configparser
 import sys
+from configparser import ConfigParser
 
 sys.path.append("..")
 from application import emailfile
@@ -11,7 +11,7 @@ from application import emailfile
 class ini_info(object):
     def __init__(self, recordfile):
         self.logfile = recordfile
-        self.cfg = configparser.ConfigParser()
+        self.cfg = ConfigParser()
 
     def cfg_load(self):
         self.cfg.read(self.logfile)
@@ -46,18 +46,18 @@ class ini_info(object):
         self.cfg.set(section, key, value)
 
     def save(self):
-        with open(self.logfile, 'w') as fp:
+        with open(self.logfile, "w") as fp:
             self.cfg.write(fp)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ini = ini_info(emailfile)
     ini.cfg_load()
     ini.cfg_dump()
 
-    ini.set_item('email', 'user', 'ceshiyouxiang@123.com;980555216@qq.com')
+    ini.set_item("email", "user", "ceshiyouxiang@123.com;980555216@qq.com")
     ini.cfg_dump()
-    ini.cfg_get('email', 'switch')
+    ini.cfg_get("email", "switch")
 
     # ini.add_section('rose')
     # ini.set_item('rose', 'pwd', 'ccc')

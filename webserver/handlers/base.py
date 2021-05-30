@@ -1,12 +1,11 @@
 # -*- coding:utf-8 -*-
 """ 路由请求基础类 """
 
-import json
 
-import tornado
+from tornado.web import RequestHandler
 
 
-class BaseHandler(tornado.web.RequestHandler):
+class BaseHandler(RequestHandler):
     # ----------------------------------------------------------------------
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")  # 这个地方可以写域名

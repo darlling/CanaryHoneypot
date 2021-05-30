@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 主机状态处理 """
 
-import datetime
-import hashlib
+from datetime import datetime
+from hashlib import md5
 
 from dbs.dal.Host import HostOp
 
@@ -12,7 +12,7 @@ hostop = HostOp()
 def hoststatus(lasttime, hostname, ip, status):
 
     # 计算host表主键id
-    idmd5 = hashlib.md5()
+    idmd5 = md5()
     idmd5.update((hostname + ip).encode("utf-8"))
     id = idmd5.hexdigest()
     return hostop.insert_data(id, lasttime, hostname, ip, status)
@@ -21,18 +21,22 @@ def hoststatus(lasttime, hostname, ip, status):
 def hostonline():
     # 查询所有在线主机
     onlines = hostop.select_data()
-    print('Host detector \033[1;35m completed!!! \033[0m!')
+    print("Host detector \033[1;35m completed!!! \033[0m!")
     if onlines:
         for h in onlines:
             # 用当前时间减去主机最后在线时间
-            time_value = datetime.datetime.now() - h.last_time
-            print(datetime.datetime.now())
+            time_value = datetime.now() - h.last_time
+            print(datetime.now())
             print(h.last_time)
             # print(time_value.seconds)
             # 时间间隔大于20秒就认为机器离线，更新数据库主机状态
             if time_value.seconds > 50:
-                hoststatus(h.last_time.strftime("%Y-%m-%d %H:%M:%S"),
-                           h.hostname, h.ip, "offline")
+                hoststatus(
+                    h.last_time.strftime("%Y-%m-%d %H:%M:%S"),
+                    h.hostname,
+                    h.ip,
+                    "offline",
+                )
             else:
                 pass
     else:
@@ -50,16 +54,8 @@ def getHoststatus():
                 "date": h.last_time.strftime("%Y-%m-%d %H:%M:%S"),
                 "name": h.hostname,
                 "address": h.ip,
-                "tag": h.status
+                "tag": h.status,
             }
             hostlists.append(hostdict)
         results = {"list": hostlists}
         return results
-
-
-# {
-#     date: '2021-04-15 12:20:25',
-#     name: 'testhost',
-#     address: '100.10.10.10',
-#     tag: 'online'
-# }

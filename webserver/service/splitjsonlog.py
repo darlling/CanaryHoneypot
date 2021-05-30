@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 解析客户端请求过来的日志 """
 
-import uuid
 from datetime import datetime, timedelta
+from uuid import uuid1
 
 from dbs.dal.LogOperate import LogOp
 from util.task import sched
@@ -33,10 +33,6 @@ def parserlog(jsonlog):
         else:
             honeycred = False
 
-        # if "local_time" in jsonlog:
-        #     local_time = jsonlog["local_time"]
-        #     # print local_time
-        # else:
         local_time = datetime.now()
 
         if "logdata" in jsonlog:
@@ -533,7 +529,7 @@ def parserlog(jsonlog):
                                 "date",
                                 run_date=(datetime.now() + timedelta(seconds=1)),
                                 args=["蜜罐告警：" + logtype, content],
-                                id=str(uuid.uuid1()),
+                                id=str(uuid1()),
                             )
                             # send_mail("蜜罐告警："+logtype,content)
                             return True

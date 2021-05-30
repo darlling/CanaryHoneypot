@@ -3,7 +3,6 @@
 
 from json import loads
 
-import tornado
 # from service.emailservice import send_mail
 # from service.paginationlog import listpage
 # from util.auth import jwtauth

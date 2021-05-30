@@ -1,15 +1,9 @@
 # -*- coding:utf-8 -*-
 """ 日志列表展示 """
 
-import sys
 
 from dbs.dal.LogOperate import LogOp
 
-if sys.version[0] == "2":
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-else:
-    from importlib import reload
 
 logselect = LogOp()
 

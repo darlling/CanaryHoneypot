@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*-
 """ 后台面板首页路由 """
 
-import tornado
-from util.auth import jwtauth
+# from util.auth import jwtauth
 
 from handlers.base import BaseHandler
 
@@ -10,8 +9,8 @@ from handlers.base import BaseHandler
 class IndexHandler(BaseHandler):
     def get(self):
         # Contains user found in previous auth
-        self.render('index.html')
+        self.render("index.html")
 
     def post(self):
         # Contains user found in previous auth
-        self.render('index.html')
+        self.render("index.html")

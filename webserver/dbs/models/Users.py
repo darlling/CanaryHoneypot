@@ -3,11 +3,8 @@
 
 from datetime import datetime
 
-# import sys
-# sys.path.append("..")
-from dbs.initdb import Base, DBSession, engine
+from dbs.initdb import Base, engine
 from sqlalchemy import TIMESTAMP, Column, Integer, String, Unicode
-from sqlalchemy.orm import backref, relationship
 
 
 class User(Base):

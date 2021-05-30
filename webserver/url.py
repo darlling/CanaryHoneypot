@@ -1,20 +1,10 @@
 # -*- coding:utf-8 -*-
 """ URL路由配置文件 """
 
-import unittest
+from unittest import main
 
-from handlers import (
-    chart,
-    email,
-    hello,
-    host,
-    index,
-    logcollection,
-    login,
-    paginationlog,
-    whiteiplist,
-    whiteport,
-)
+from handlers import (chart, email, hello, host, index, logcollection, login,
+                      paginationlog, whiteiplist, whiteport)
 
 url = [
     # LoginHandler url
@@ -34,4 +24,4 @@ url = [
 ]
 
 if __name__ == "__main__":
-    unittest.main()
+    main()

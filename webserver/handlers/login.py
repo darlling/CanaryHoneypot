@@ -1,15 +1,12 @@
 # -*- coding:utf-8 -*-
 """ 登录认证 """
 
-import datetime
-import json
+from datetime import datetime, timedelta
+from json import loads
 
-import jwt
-import tornado.escape
-import tornado.ioloop
-import tornado.web
-from dbs.initdb import Base, DBSession, engine
+from dbs.initdb import DBSession
 from dbs.models.Users import User
+from jwt import encode
 from util.auth import jwtauth, secret_key
 
 from handlers.base import BaseHandler
@@ -38,7 +35,7 @@ class AuthHandler(BaseHandler):
             # self.set_header("Authorization","")
             if self.request.body:
                 # print self.request.body
-                data = json.loads(self.request.body.decode("utf-8"))
+                data = loads(self.request.body.decode("utf-8"))
                 # print(data)
                 try:
                     username = data["username"]
@@ -68,10 +65,9 @@ class AuthHandler(BaseHandler):
                         dataToken = {
                             "id": result.id,
                             "role": result.username,
-                            "exp": datetime.datetime.utcnow()
-                            + datetime.timedelta(seconds=3600),
+                            "exp": datetime.utcnow() + timedelta(seconds=3600),
                         }
-                        token = jwt.encode(dataToken, secret_key, algorithm="HS256")
+                        token = encode(dataToken, secret_key, algorithm="HS256")
                         # print(token)
                         status = True
                         role = result.username

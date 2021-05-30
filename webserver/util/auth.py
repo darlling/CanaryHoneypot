@@ -1,30 +1,31 @@
 # -*- coding:utf-8 -*-
 
-import random
-import string
+from random import sample
+from string import ascii_letters, digits
 
-import jwt
+from jwt import decode
 
-secret_key = ''.join(random.sample(string.ascii_letters + string.digits, 28))
-#secret_key="fdsafdasfdsafdsfsaffsadfsda"
+secret_key = "".join(sample(ascii_letters + digits, 28))
+# secret_key="fdsafdasfdsafdsfsaffsadfsda"
 options = {
-    'verify_signature': True,
-    'verify_exp': True,
-    'verify_nbf': False,
-    'verify_iat': True,
-    'verify_aud': False
+    "verify_signature": True,
+    "verify_exp": True,
+    "verify_nbf": False,
+    "verify_iat": True,
+    "verify_aud": False,
 }
 
 
 def jwtauth(handler_class):
-    ''' Handle Tornado JWT Auth '''
+    """Handle Tornado JWT Auth"""
+
     def wrap_execute(handler_execute):
         def require_auth(handler, kwargs):
-            auth = handler.request.headers.get('Authorization')
-            #print(auth)
+            auth = handler.request.headers.get("Authorization")
+            # print(auth)
             if auth:
                 parts = auth.split()
-                if parts[0].lower() != 'opencanary':
+                if parts[0].lower() != "honeypot":
                     handler._transforms = []
                     handler.set_status(401)
                     handler.write("invalid header authorization")
@@ -43,7 +44,7 @@ def jwtauth(handler_class):
                 token = parts[1]
                 print(token)
                 try:
-                    jwt.decode(token, secret_key, options=options)
+                    decode(token, secret_key, options=options)
                     print("test")
                 except Exception as e:
                     print(e)

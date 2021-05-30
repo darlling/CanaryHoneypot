@@ -1,15 +1,12 @@
 # -*- coding:utf-8 -*-
 """ 蜜罐日志表 """
 
-# import sys
-# sys.path.append("..")
-from dbs.initdb import Base, DBSession, engine
-from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, Unicode
-from sqlalchemy.orm import backref, relationship
+from dbs.initdb import Base, engine
+from sqlalchemy import Column, String
 
 
 class Whiteip(Base):
-    __tablename__ = 'Whiteip'
+    __tablename__ = "Whiteip"
     src_host = Column(String(50), nullable=False, primary_key=True)
 
 
@@ -23,13 +20,13 @@ def drop_db():
 
 if __name__ == "__main__":
     init_db()
-    #drop_db()
+    # drop_db()
     # whiteip_data = Whiteip()
     # whiteip_data.src_host = '172.18.222.170'
     # DBSession.add(whiteip_data)
     # DBSession.flush()
     # DBSession.commit()
-    print('create OpencanaryLog table')
+    print("create OpencanaryLog table")
 """
 CREATE TABLE `Whiteip` (
 	src_host VARCHAR(50) NOT NULL,

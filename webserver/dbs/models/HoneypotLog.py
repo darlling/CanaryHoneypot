@@ -4,10 +4,9 @@
 import sys
 
 from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, Unicode
-from sqlalchemy.orm import backref, relationship
 
 sys.path.append("..")
-from dbs.initdb import Base, DBSession, engine
+from dbs.initdb import Base, engine
 
 
 class OpencanaryLog(Base):

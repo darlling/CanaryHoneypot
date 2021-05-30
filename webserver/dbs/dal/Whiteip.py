@@ -3,15 +3,12 @@
 
 from dbs.initdb import DBSession
 from dbs.models.Whiteip import Whiteip
-from sqlalchemy import asc, desc
 from sqlalchemy.exc import InvalidRequestError
-
-# import sys
-# sys.path.append("..")
 
 
 class White:
     """增删改查"""
+
     def __init__(self):
         self.session = DBSession
 

@@ -2,8 +2,6 @@
 """ 白名单过滤 """
 
 from dbs.dal.Whiteip import White
-# import sys
-# sys.path.append("..")
 
 White_res = White()
 

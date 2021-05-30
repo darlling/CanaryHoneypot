@@ -1,10 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 邮件配置增删改 """
 
-import json
+from json import loads
 
-# import sys
-# sys.path.append("..")
 from application import emailfile
 from util.auth import jwtauth
 from util.config import ini_info
@@ -24,16 +22,16 @@ class EmailModifyHandler(BaseHandler):
     def post(self):
         # 接收提交过来的email配置
         if self.request.headers["Content-Type"].startswith("application/json"):
-            json_args = json.loads(self.request.body.decode('utf-8'))
+            json_args = loads(self.request.body.decode("utf-8"))
 
             # 更新email.ini
             ini.cfg_load()
-            ini.set_item('email', 'user', json_args['user'])
+            ini.set_item("email", "user", json_args["user"])
             ini.save()
             self.write(json_args)
         else:
             self.json_args = None
-            message = 'Unable to parse JSON.'
+            # message = 'Unable to parse JSON.'
             self.send_error(status_code=400)  # 向浏览器发送错误状态码，会调用write_error
 
     def get(self):

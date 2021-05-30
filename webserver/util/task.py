@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 """ 计划任务模块 """
 
-import atexit
 import fcntl
+from atexit import register
 
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from service.hostservice import hostonline
 
-#jobstores = {
+# jobstores = {
 #    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
-#}
+# }
 
 sched = BackgroundScheduler()
 
@@ -22,7 +21,7 @@ def check_scheduler():
     sched.start()
     try:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        if sched.get_job('check_host'):
+        if sched.get_job("check_host"):
             pass
         else:
             host_scheduler()
@@ -33,10 +32,10 @@ def check_scheduler():
         fcntl.flock(f, fcntl.LOCK_UN)
         f.close()
 
-    atexit.register(unlock)
+    register(unlock)
 
 
 def host_scheduler():
-    sched.add_job(hostonline, 'interval', seconds=30, id='check_host')
+    sched.add_job(hostonline, "interval", seconds=30, id="check_host")
     print("It is \033[1;35m running \033[0m!")
     return True
