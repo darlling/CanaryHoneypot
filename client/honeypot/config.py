@@ -3,7 +3,6 @@ from __future__ import print_function
 import json
 from itertools import groupby
 from os import rename
-# from subprocess import DEVNULL, run
 from os.path import isfile
 from string import ascii_letters, digits
 from sys import exit
@@ -15,16 +14,14 @@ SAMPLE_SETTINGS = resource_filename(__name__, "data/settings.json")
 SETTINGS = "honeypot.conf"
 PY3 = True
 
+
 class Config:
     def __init__(self, configfile=SETTINGS):
         self.__config = None
         self.__configfile = configfile
 
-        files = [
-            f"/etc/honeypotd/{configfile}",
-            configfile
-        ]
-        print("** I hope you enjoy using the honeypot designed by 20175415-何万有 **")
+        files = [f"/etc/honeypotd/{configfile}", configfile]
+        print("** I hope you enjoy using the honeypot designed by 20175415-何万有. **")
         for fname in files:
             try:
                 with open(fname, "r") as f:
@@ -35,9 +32,6 @@ class Config:
                 print("[-] Failed to open %s for reading (%s)" % (fname, e))
             except ValueError as e:
                 print("[-] Failed to decode json from %s (%s)" % (fname, e))
-                # run(
-                #     "cp -r %s /var/tmp/config-err-$(date +%%s)" % fname, shell=True, stdout=DEVNULL
-                # )
             except Exception as e:
                 print("[-] An error occured loading %s (%s)" % (fname, e))
         if self.__config is None:
@@ -87,7 +81,7 @@ class Config:
         disabled_modules = tuple(
             filter(
                 lambda m: not params.get("%s.enabled" % m, False),
-                ["ftp", "ssh", "smb", "http"],
+                ["ftp", "ssh", "http"],
             )
         )
         for k in params.keys():
@@ -161,22 +155,6 @@ class Config:
         # https://tools.ietf.org/html/rfc4253
         if key == "ssh.version" and len(val) > 253:
             raise ConfigException(key, "SSH version string too long (%s..)" % val[:5])
-
-        if key == "smb.filelist":
-            extensions = ["PDF", "DOC", "DOCX"]
-            for f in val:
-                if "name" not in f:
-                    raise ConfigException(key, "No filename specified for %s" % f)
-                if "type" not in f:
-                    raise ConfigException(key, "No filetype specified for %s" % f)
-                if not f["name"]:
-                    raise ConfigException(key, "Filename cannot be empty")
-                if not f["type"]:
-                    raise ConfigException(key, "File type cannot be empty")
-                if f["type"] not in extensions:
-                    raise ConfigException(
-                        key, "Extension %s is not supported" % f["type"]
-                    )
 
         if key == "device.name":
             allowed_chars = ascii_letters + digits + "+-#_"

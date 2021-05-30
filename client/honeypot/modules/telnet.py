@@ -3,7 +3,6 @@ from time import sleep
 
 from docker import from_env
 from honeypot.modules import CanaryService
-from twisted.application import internet
 from twisted.application.internet import TCPServer
 from twisted.conch.telnet import (
     ECHO,
@@ -12,7 +11,6 @@ from twisted.conch.telnet import (
     TelnetTransport,
 )
 from twisted.cred import credentials, portal
-from twisted.internet import protocol
 from twisted.internet.protocol import ServerFactory
 from zope.interface import implementer
 
@@ -20,10 +18,10 @@ from zope.interface import implementer
 @implementer(portal.IRealm)
 class Realm:
     def requestAvatar(self, avatarId, mind, *interfaces):
-        if ITelnetProtocol in interfaces:
-            av = MyTelnet()
-            av.state = "Command"
-            return ITelnetProtocol, av, lambda: None
+        # if ITelnetProtocol in interfaces:
+        #     av = MyTelnet()
+        #     av.state = "Command"
+        #     return ITelnetProtocol, av, lambda: None
         raise NotImplementedError("Not supported by this realm")
 
 
@@ -61,7 +59,7 @@ class Telnet(CanaryService):
 
     def __init__(self, config=None, logger=None):
         CanaryService.__init__(self, config=config, logger=logger)
-        self.port = int(config.getVal("telnet.port", default=2223))
+        self.port = int(config.getVal("telnet.port", default=23))
         self.banner = config.getVal("telnet.banner", "").encode("utf8")
         self.logtype = logger.LOG_TELNET_LOGIN_ATTEMPT
         self.listen_addr = config.getVal("device.listen_addr", default="")
@@ -86,7 +84,7 @@ class Telnet(CanaryService):
             if "STOPPED" in status.stdout.decode("utf-8"):
                 run(r"supervisorctl start cowrielog", shell=True, stdout=DEVNULL)
         except:
-            print("ssh.py supervisor error!!")
+            print("telnet.py supervisor error!!")
 
     def getService(self):
         self.dockerPs()
@@ -94,9 +92,9 @@ class Telnet(CanaryService):
         self.supervisor()
         r = Realm()
         p = portal.Portal(r)
-        f = protocol.ServerFactory()
+        f = ServerFactory()
         f.canaryservice = self
         f.logger = self.logger
         f.banner = self.banner
         f.protocol = lambda: TelnetTransport(AlertAuthTelnetProtocol, p)
-        return internet.TCPServer(self.port, f, interface=self.listen_addr)
+        return TCPServer(self.port, f, interface=self.listen_addr)

@@ -2,15 +2,17 @@ from __future__ import print_function
 
 import logging.config
 import socket
-import sys
 from datetime import datetime
 from logging.handlers import SocketHandler
-from honeypot.iphelper import *
-import hpfeeds
-import simplejson as json
+from sys import stderr
+
 from apscheduler.schedulers.twisted import TwistedScheduler
+from hpfeeds import new
 from requests import post
+from simplejson import dumps, loads
 from twisted.internet import reactor
+
+from honeypot.iphelper import *
 
 
 class Singleton(type):
@@ -25,29 +27,30 @@ class Singleton(type):
 def getLogger(config):
     try:
         d = config.getVal("logger")
-    except Exception as e:
-        print("Error: config does not have 'logger' section", file=sys.stderr)
+    except Exception as err:
+        print("Error: config does not have 'logger' section", file=stderr)
+        print(err)
         exit(1)
 
     classname = d.get("class", None)
     if classname is None:
-        print("Logger section is missing the class key.", file=sys.stderr)
+        print("Logger section is missing the class key.", file=stderr)
         exit(1)
 
     LoggerClass = globals().get(classname, None)
     if LoggerClass is None:
-        print("Logger class (%s) is not defined." % classname, file=sys.stderr)
+        print("Logger class (%s) is not defined." % classname, file=stderr)
         exit(1)
 
     kwargs = d.get("kwargs", None)
     if kwargs is None:
-        print("Logger section is missing the kwargs key.", file=sys.stderr)
+        print("Logger section is missing the kwargs key.", file=stderr)
         exit(1)
     try:
         logger = LoggerClass(config, **kwargs)
-    except Exception as e:
-        print("An error occured initialising the logger class", file=sys.stderr)
-        print(e)
+    except Exception as err:
+        print("An error occured initialising the logger class", file=stderr)
+        print(err)
         exit(1)
 
     return logger
@@ -149,7 +152,7 @@ class PyLogger(LoggerBase):
         try:
             logging.config.dictConfig(logconfig)
         except Exception as e:
-            print("Invalid logging config", file=sys.stderr)
+            print("Invalid logging config", file=stderr)
             print(type(e))
             print(e)
             exit(1)
@@ -160,8 +163,8 @@ class PyLogger(LoggerBase):
 
     def error(self, data):
         data["local_time"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
-        msg = "[ERR] %r" % json.dumps(data, sort_keys=True)
-        print(msg, file=sys.stderr)
+        msg = "[ERR] %r" % dumps(data, sort_keys=True)
+        print(msg, file=stderr)
         self.logger.warn(msg)
 
     def post2server(self, jsondata):
@@ -172,9 +175,9 @@ class PyLogger(LoggerBase):
         except:
             self.logger.error("logger.py post2server error!!")
 
-    def log(self, logdata, retry=True, m_i=False):
+    def log(self, logdata, m_i=False):
         logdata = self.sanitizeLog(logdata)
-        jsondata = json.dumps(logdata, sort_keys=True)
+        jsondata = dumps(logdata, sort_keys=True)
         # Log only if not in ignorelist
         notify = True
         if "src_host" in logdata:
@@ -243,7 +246,7 @@ class HpfeedsHandler(logging.Handler):
         self.ident = str(ident)
         self.secret = str(secret)
         self.channels = map(str, channels)
-        hpc = hpfeeds.new(self.host, self.port, self.ident, self.secret)
+        hpc = new(self.host, self.port, self.ident, self.secret)
         hpc.subscribe(channels)
         self.hpc = hpc
 
@@ -263,11 +266,11 @@ class SlackHandler(logging.Handler):
     def generate_msg(self, alert):
         msg = {}
         msg["pretext"] = "Honeypot Alert"
-        data = json.loads(alert.msg)
+        data = loads(alert.msg)
         msg["fields"] = []
         for k, v in data.items():
             msg["fields"].append(
-                {"title": k, "value": json.dumps(v) if type(v) is dict else v}
+                {"title": k, "value": dumps(v) if type(v) is dict else v}
             )
         return {"attachments": [msg]}
 
@@ -309,7 +312,7 @@ class TeamsHandler(logging.Handler):
         return facts
 
     def emit(self, record):
-        data = json.loads(record.msg)
+        data = loads(record.msg)
         payload = self.message(data)
         headers = {"Content-Type": "application/json"}
         response = post(self.webhook_url, headers=headers, json=payload)

@@ -1,12 +1,10 @@
 from __future__ import print_function
 
-import base64
-import os
-import struct
-import sys
+import os.path
 import time
+from base64 import b64encode
+from struct import unpack
 from subprocess import DEVNULL, run
-from time import sleep
 
 import twisted
 from cryptography.hazmat.backends import default_backend
@@ -17,15 +15,14 @@ from honeypot.modules import CanaryService
 from twisted.application import internet
 from twisted.conch import avatar, error
 from twisted.conch import interfaces as conchinterfaces
-from twisted.conch.checkers import SSHPublicKeyDatabase
 from twisted.conch.openssh_compat import primes
 from twisted.conch.ssh import connection, factory, keys, session, transport, userauth
 from twisted.conch.ssh.common import MP
 from twisted.cred import checkers, credentials, error, portal
-from twisted.internet import defer, protocol, reactor
+from twisted.internet import defer
 from zope.interface import implementer
 
-SSH_PATH = "/var/tmp"
+SSH_PATH = r"/var/tmp"
 
 # pulled from Kippo
 from twisted.conch.ssh.common import NS, getNS
@@ -123,7 +120,7 @@ class HoneyPotSSHUserAuthServer(userauth.SSHUserAuthServer):
             ]:
                 if keytype in key_blob:
                     key = "{keytype} {keydata}".format(
-                        keytype=keytype, keydata=base64.b64encode(key_blob)
+                        keytype=keytype, keydata=b64encode(key_blob)
                     )
 
             print("Key was {key}".format(key=key))
@@ -250,7 +247,7 @@ class HoneyPotTransport(transport.SSHServerTransport):
             self.ignoreNextPacket = 0
             return
         self.dhGexRequest = packet
-        min, ideal, max = struct.unpack(">3L", packet)
+        min, ideal, max = unpack(">3L", packet)
         self.g, self.p = self.factory.getDHPrime(min)
         self.sendPacket(MSG_KEX_DH_GEX_GROUP, MP(self.p) + MP(self.g))
 
@@ -270,7 +267,7 @@ class HoneyPotTransport(transport.SSHServerTransport):
             del self.factory.sessions[self.transport.sessionno]
         # self.lastlogExit()
         if self.ttylog_open:
-            ttylog.ttylog_close(self.ttylog_file, time.time())
+            # ttylog.ttylog_close(self.ttylog_file, time.time())
             self.ttylog_open = False
         transport.SSHServerTransport.connectionLost(self, reason)
 
@@ -289,6 +286,7 @@ class HoneyPotTransport(transport.SSHServerTransport):
             transport.SSHServerTransport.sendDisconnect(self, reason, desc)
         else:
             self.transport.write("Protocol mismatch.\n")
+            log = self.factory.canaryservice.log
             log.msg("Disconnecting with error, code %s\nreason: %s" % (reason, desc))
             self.transport.loseConnection()
 
@@ -424,7 +422,7 @@ class CanarySSH(CanaryService):
 
     def __init__(self, config=None, logger=None):
         CanaryService.__init__(self, config=config, logger=logger)
-        self.port = int(config.getVal("ssh.port", default=2222))
+        self.port = int(config.getVal("ssh.port", default=22))
         self.version = config.getVal(
             "ssh.version", default="SSH-2.0-OpenSSH_5.1p1 Debian-5"
         ).encode("utf8")
@@ -451,7 +449,7 @@ class CanarySSH(CanaryService):
 
     def getService(self):
         self.dockerPs()
-        sleep(2)
+        time.sleep(2)
         self.supervisor()
         factory = HoneyPotSSHFactory(version=self.version, logger=self.logger)
         factory.canaryservice = self

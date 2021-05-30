@@ -1,23 +1,22 @@
-from honeypot.modules import CanaryService
-from honeypot.config import ConfigException, PY3
-
-from twisted.protocols.policies import TimeoutMixin
-from twisted.internet.protocol import Protocol
-from twisted.internet.protocol import Factory
-from twisted.application import internet
 from random import randint
+from re import search
+from struct import pack, unpack
 
-import struct
-import re
+from honeypot.config import PY3, ConfigException
+from honeypot.modules import CanaryService
+from twisted.application import internet
+from twisted.internet.protocol import Factory, Protocol
+from twisted.protocols.policies import TimeoutMixin
 
 UINT_MAX = 0xFFFFFFFF
 
+
 class MySQL(Protocol, TimeoutMixin):
-    HEADER_LEN              = 4
-    ERR_CODE_ACCESS_DENIED  = 1045
-    ERR_CODE_PKT_ORDER      = 1156
+    HEADER_LEN = 4
+    ERR_CODE_ACCESS_DENIED = 1045
+    ERR_CODE_PKT_ORDER = 1156
     SQL_STATE_ACCESS_DENIED = b"28000"
-    SQL_STATE_PKT_ORDER     = b"08S01"
+    SQL_STATE_PKT_ORDER = b"08S01"
 
     # https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::Handshake
     def __init__(self, factory):
@@ -30,15 +29,15 @@ class MySQL(Protocol, TimeoutMixin):
     @staticmethod
     def build_packet(seq_id, data):
         l = len(data)
-        if l > 0xffffff or l <= 0:
+        if l > 0xFFFFFF or l <= 0:
             return None
 
-        if seq_id > 0xff or seq_id < 0:
+        if seq_id > 0xFF or seq_id < 0:
             return None
 
         # chop to 3 byte int
-        _length = struct.pack('<I', l)[:-1]
-        _seq_id = struct.pack('B', seq_id)
+        _length = pack("<I", l)[:-1]
+        _seq_id = pack("B", seq_id)
 
         return _length + _seq_id + data
 
@@ -55,58 +54,69 @@ class MySQL(Protocol, TimeoutMixin):
         if PY3:
             plen = data[i]
         else:
-            plen = struct.unpack('B', data[i])[0]
-        i+=1
+            plen = unpack("B", data[i])[0]
+        i += 1
         if plen == 0:
             return username, None
 
         if PY3:
-            password="".join("{:02x}".format(c) for c in data[i:i+plen])
+            password = "".join("{:02x}".format(c) for c in data[i : i + plen])
         else:
-            password="".join("{:02x}".format(ord(c)) for c in data[i:i+plen])
-            
+            password = "".join("{:02x}".format(ord(c)) for c in data[i : i + plen])
+
         return username, password
 
     def consume_packet(self):
         if len(self._buffer) < MySQL.HEADER_LEN:
             return None, None
-        length = struct.unpack('<I', self._buffer[:3] + b'\x00')[0]
+        length = unpack("<I", self._buffer[:3] + b"\x00")[0]
         if PY3:
             seq_id = self._buffer[3]
         else:
-            seq_id = struct.unpack('<B', self._buffer[3])[0]
+            seq_id = unpack("<B", self._buffer[3])[0]
 
         # enough buffer data to consume packet?
         if len(self._buffer) < MySQL.HEADER_LEN + length:
             return seq_id, None
 
-        payload = self._buffer[MySQL.HEADER_LEN: MySQL.HEADER_LEN + length]
+        payload = self._buffer[MySQL.HEADER_LEN : MySQL.HEADER_LEN + length]
 
-        self._buffer = self._buffer[MySQL.HEADER_LEN + length:]
+        self._buffer = self._buffer[MySQL.HEADER_LEN + length :]
 
         return seq_id, payload
 
     def server_greeting(self):
-        # struct.pack returns a byte string for py2 and py3
-        _threadid = struct.pack('<I', self.threadid)
+        # pack returns a byte string for py2 and py3
+        _threadid = pack("<I", self.threadid)
         # TODO: randomize salts embedded here
-        data = b'\x0a' + self.factory.canaryservice.banner + b'\x00' + _threadid + b'\x25\x73\x36\x51\x74\x77\x75\x69\x00\xff\xf7\x08\x02\x00\x0f\x80\x15\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x2e\x47\x5c\x78\x67\x7a\x4f\x5b\x5c\x3e\x5c\x39\x00\x6d\x79\x73\x71\x6c\x5f\x6e\x61\x74\x69\x76\x65\x5f\x70\x61\x73\x73\x77\x6f\x72\x64\x00'
+        data = (
+            b"\x0a"
+            + self.factory.canaryservice.banner
+            + b"\x00"
+            + _threadid
+            + b"\x25\x73\x36\x51\x74\x77\x75\x69\x00\xff\xf7\x08\x02\x00\x0f\x80\x15\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x2e\x47\x5c\x78\x67\x7a\x4f\x5b\x5c\x3e\x5c\x39\x00\x6d\x79\x73\x71\x6c\x5f\x6e\x61\x74\x69\x76\x65\x5f\x70\x61\x73\x73\x77\x6f\x72\x64\x00"
+        )
         return self.build_packet(0x00, data)
 
     def access_denied(self, seq_id, user, password=None):
         Y = b"YES" if password else b"NO"
         ip = self.transport.getPeer().host
         msg = "Access denied for user '%s'@'%s' (using password: %s)" % (user, ip, Y)
-        return self.error_pkt(seq_id, MySQL.ERR_CODE_ACCESS_DENIED,
-                              MySQL.SQL_STATE_ACCESS_DENIED, msg.encode())
+        return self.error_pkt(
+            seq_id,
+            MySQL.ERR_CODE_ACCESS_DENIED,
+            MySQL.SQL_STATE_ACCESS_DENIED,
+            msg.encode(),
+        )
 
     def unordered_pkt(self, seq_id):
         msg = "Got packets out of order".encode()
-        return self.error_pkt(seq_id, MySQL.ERR_CODE_PKT_ORDER,
-                              MySQL.SQL_STATE_PKT_ORDER, msg)
+        return self.error_pkt(
+            seq_id, MySQL.ERR_CODE_PKT_ORDER, MySQL.SQL_STATE_PKT_ORDER, msg
+        )
 
     def error_pkt(self, seq_id, err_code, sql_state, msg):
-        data = b"\xff" + struct.pack("<H", err_code) + b"#" + sql_state + msg
+        data = b"\xff" + pack("<H", err_code) + b"#" + sql_state + msg
         return self.build_packet(0x02, data)
 
     def connectionMade(self):
@@ -133,7 +143,7 @@ class MySQL(Protocol, TimeoutMixin):
                 # seq_id == 1 and payload has arrived
                 username, password = self.parse_auth(payload)
                 if username:
-                    logdata = {'USERNAME': username, 'PASSWORD': password}
+                    logdata = {"USERNAME": username, "PASSWORD": password}
                     self.factory.canaryservice.log(logdata, transport=self.transport)
                     self.transport.write(self.access_denied(0x02, username, password))
                     self.transport.loseConnection()
@@ -143,12 +153,13 @@ class MySQL(Protocol, TimeoutMixin):
     def timeoutConnection(self):
         self.transport.abortConnection()
 
+
 class SQLFactory(Factory):
     def __init__(self):
-        self.threadid = randint(0,0x0FFF)
+        self.threadid = randint(0, 0x0FFF)
 
     def next_threadid(self):
-        self.threadid = (self.threadid + randint(1,5)) & UINT_MAX
+        self.threadid = (self.threadid + randint(1, 5)) & UINT_MAX
         return self.threadid
 
     def buildProtocol(self, addr):
@@ -156,17 +167,18 @@ class SQLFactory(Factory):
 
 
 class CanaryMySQL(CanaryService):
-    NAME = 'mysql'
+    NAME = "mysql"
 
     def __init__(self, config=None, logger=None):
         CanaryService.__init__(self, config=config, logger=logger)
         self.port = int(config.getVal("mysql.port", default=3306))
-        self.banner = config.getVal("mysql.banner", default="5.5.43-0ubuntu0.14.04.1").encode()
+        self.banner = config.getVal(
+            "mysql.banner", default="5.5.43-0ubuntu0.14.04.1"
+        ).encode()
         self.logtype = logger.LOG_MYSQL_LOGIN_ATTEMPT
-        self.listen_addr = config.getVal('device.listen_addr', default='')
-        if re.search('^[3456]\.[-_~.+\w]+$', self.banner.decode()) is None:
+        self.listen_addr = config.getVal("device.listen_addr", default="")
+        if search("^[3456]\.[-_~.+\w]+$", self.banner.decode()) is None:
             raise ConfigException("sql.banner", "Invalid MySQL Banner")
-
 
     def getService(self):
         factory = SQLFactory()
