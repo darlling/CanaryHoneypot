@@ -44,18 +44,10 @@ class ChartHandler(BaseHandler):
                 {"item": "http", "count": 0},
                 {"item": "ssh", "count": 0},
                 {"item": "telnet", "count": 0},
-                {"item": "portscan", "count": 0},
                 {"item": "mysql", "count": 0},
                 {"item": "git", "count": 0},
                 {"item": "ntp", "count": 0},
                 {"item": "redis", "count": 0},
-                {"item": "tcpbanner", "count": 0},
-                {"item": "vnc", "count": 0},
-                {"item": "rdp", "count": 0},
-                {"item": "snmp", "count": 0},
-                {"item": "sip", "count": 0},
-                {"item": "mssql", "count": 0},
-                {"item": "httpproxy", "count": 0},
             ]
             pie_res = pie_num(sourceData)
             self.write(dumps(pie_res))

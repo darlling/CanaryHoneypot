@@ -20,12 +20,13 @@ def jwtauth(handler_class):
     """Handle Tornado JWT Auth"""
 
     def wrap_execute(handler_execute):
-        def require_auth(handler, kwargs):
+        def require_auth(handler):
             auth = handler.request.headers.get("Authorization")
             # print(auth)
             if auth:
                 parts = auth.split()
-                if parts[0].lower() != "honeypot":
+                # print(parts)
+                if parts[0].lower() != "opencanary":
                     handler._transforms = []
                     handler.set_status(401)
                     handler.write("invalid header authorization")

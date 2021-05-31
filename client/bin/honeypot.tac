@@ -77,7 +77,7 @@ def start_mod(application, klass):
 def logMsg(msg):
     data = {}
     data["logdata"] = {"msg": msg}
-    logger.log(data, retry=False)
+    logger.log(data)
 
 
 application = service.Application("honeypotd")
