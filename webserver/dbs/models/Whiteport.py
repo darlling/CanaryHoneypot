@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 """ 蜜罐白名单端口表 """
 
-from dbs.initdb import Base, DBSession, engine
+from dbs.initdb import Base, engine
 from sqlalchemy import Column, Integer
 
 

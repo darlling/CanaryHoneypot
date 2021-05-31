@@ -7,7 +7,7 @@ from json import loads
 from dbs.initdb import DBSession
 from dbs.models.Users import User
 from jwt import encode
-from util.auth import jwtauth, secret_key
+from util.auth import secret_key
 
 from handlers.base import BaseHandler
 

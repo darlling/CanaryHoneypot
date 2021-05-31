@@ -59,3 +59,11 @@ def getHoststatus():
             hostlists.append(hostdict)
         results = {"list": hostlists}
         return results
+
+
+# {
+#     date: '2021-04-15 12:20:25',
+#     name: 'testhost',
+#     address: '100.10.10.10',
+#     tag: 'online'
+# }

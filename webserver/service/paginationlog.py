@@ -4,7 +4,6 @@
 
 from dbs.dal.LogOperate import LogOp
 
-
 logselect = LogOp()
 
 

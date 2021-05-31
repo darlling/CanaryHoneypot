@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 """ 服务端启动文件 """
 
-# import tornado.autoreload
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web

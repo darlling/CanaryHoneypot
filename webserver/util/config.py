@@ -55,7 +55,7 @@ if __name__ == "__main__":
     ini.cfg_load()
     ini.cfg_dump()
 
-    ini.set_item("email", "user", "ceshiyouxiang@123.com;980555216@qq.com")
+    ini.set_item("email", "user", "1356358689@qq.com")
     ini.cfg_dump()
     ini.cfg_get("email", "switch")
 

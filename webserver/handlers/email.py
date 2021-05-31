@@ -31,7 +31,7 @@ class EmailModifyHandler(BaseHandler):
             self.write(json_args)
         else:
             self.json_args = None
-            # message = 'Unable to parse JSON.'
+            message = "Unable to parse JSON."
             self.send_error(status_code=400)  # 向浏览器发送错误状态码，会调用write_error
 
     def get(self):

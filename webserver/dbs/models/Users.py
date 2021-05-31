@@ -4,7 +4,7 @@
 from datetime import datetime
 
 from dbs.initdb import Base, engine
-from sqlalchemy import TIMESTAMP, Column, Integer, String, Unicode
+from sqlalchemy import TIMESTAMP, Column, Integer, String
 
 
 class User(Base):

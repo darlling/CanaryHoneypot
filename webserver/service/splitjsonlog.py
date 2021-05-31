@@ -33,6 +33,10 @@ def parserlog(jsonlog):
         else:
             honeycred = False
 
+        # if "local_time" in jsonlog:
+        #     local_time = jsonlog["local_time"]
+        #     # print local_time
+        # else:
         local_time = datetime.now()
 
         if "logdata" in jsonlog:

@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
 """ 发送email """
 
-import smtplib
 from email.mime.text import MIMEText
+from smtplib import SMTP
 
 from application import emailfile, mail_host, mail_pass, mail_postfix, mail_user
 from util.config import ini_info
@@ -28,7 +28,7 @@ def send_mail(sub, content):
     msg["From"] = me
     msg["To"] = ";".join(to_list)  # 将收件人列表以‘;’分隔
     try:
-        server = smtplib.SMTP()
+        server = SMTP()
         server.connect(mail_host)  # 连接服务器
         server.login(mail_user, mail_pass)  # 登录操作
         server.sendmail(me, to_list, msg.as_string())
