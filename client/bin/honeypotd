@@ -26,6 +26,9 @@ elif [ "${cmd}" == "--restart" ]; then
 elif [ "${cmd}" == "--stop" ]; then
     pid=`sudo cat "${PIDFILE}"`
     sudo kill "$pid"
+    sudo docker stop sshtel
+    sudo supervisorctl stop cowrielog
+    sudo rm /var/log/cowrie/cowrie.json
 elif [ "${cmd}" == "--copyconfig" ]; then
     if [ -f /etc/honeypotd/honeypot.conf ]; then
         echo "A config file already exists at /etc/honeypotd/honeypot.conf, please move it first"
